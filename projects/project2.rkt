@@ -172,8 +172,25 @@
           (beside (rectangle 1 1 "solid" color) (make-row (+ x 1) y)))))
   (make-image 0))
 
+(define (draw-fatou-tr f max-iter width height)
+    (define (make-row x y acc)
+      (if (>= x width)
+          acc
+          (let* ((z (pixel->complex x y width height -1.5 1.5 -1.5 1.5))
+                 (count (escape-count f z max-iter))
+                 (color (iteration->color count max-iter)))
+            (make-row (+ x 1) y (beside acc (rectangle 1 1 "solid" color))))))
+
+    (define (make-image curr-y acc)
+      (if (>= curr-y height)
+          acc
+          (make-image (+ 1 curr-y) (above acc (make-row 0 curr-y empty-image)))))
+
+    (make-image 0 empty-image))
+
 ;; To produce different images, either:
 ;; - modify the lambda expression
 ;; - increase/decrease the max-iter (2nd argument)
 ;; - increase/decrease the resolution (last 2 arguments)
-(draw-fatou (lambda (z) (+ (* z z) c)) 50 400 400)
+;(draw-fatou (lambda (z) (+ (* z z) c)) 50 400 400)
+(draw-fatou-tr (lambda (z) (+ (* z z) c)) 70 800 800) 
