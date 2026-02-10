@@ -68,7 +68,7 @@ Where:
 
 ### Problem 1.1: Particle Accessors
 
-Write accessor functions for particles. These will make your code much more readable.
+Write accessor functions for particles. These will make your code much more readable. Use `car`, `cadr`, `caddr`, etc.
 
 ```racket
 (define test-particle (list 100 200 3 -5 60))
