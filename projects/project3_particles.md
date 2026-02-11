@@ -255,12 +255,16 @@ Write a function that takes multiple force functions and returns a single force 
 
 ```racket
 (define physics (compose-forces
-                  (make-gravity 0.5)
-                  (make-wind 0.1 0)
-                  (make-friction 0.99)))
+                  (make-gravity 1.0)
+                  (make-wind 1.0 1.0)
+                  (make-friction 0.5)))
 
-(define p (list 100 100 10 0 60))
-(physics p)  ; applies gravity, then wind, then friction
+(define p5 (list 100 100 10 0 60))
+(physics p5)
+; applies gravity: (new-vx, new-vy) = (10, 1)
+; then wind:       (new-vx, new-vy) = (11, 2)
+; then friction:   (new-vx, new-vy) = (5.5, 1.0)
+; => '(100 100 5.5 1.0 60)
 ```
 
 ---
@@ -296,24 +300,22 @@ For 1000 particles, the non-tail-recursive version needs 1000 stack frames. The 
 Write a **tail-recursive** function that takes a list of particles and returns a new list with all particles updated (using `update-particle`).
 
 ```racket
-(define particles (list (list 0 0 1 1 10) (list 5 5 -1 2 20)))
+(define particles (list '(0 0 1 1 10) '(5 5 -1 2 20) '(100 0 -100 -100 1)))
 (update-all-particles particles)
-; => (list (list 1 1 1 1 9) (list 4 7 -1 2 19))
+; => (list (list 1 1 1 1 9) (list 4 7 -1 2 19) (list 0 -100 -100 -100 0))
 ```
 
 **Your function MUST be tail-recursive.** Use a helper with an accumulator.
 
-*Note:* Your result may be in reverse order compared to the input. That's okay! (Why does this happen with tail recursion?)
+*Note:* Your result may be in reverse order compared to the input. Use `(reverse a)` to reverse your final output. (Why does this happen with tail recursion?)
 
 ### Problem 3.2: apply-force-to-all (tail-recursive)
 
 Write a **tail-recursive** function that takes a force function and a list of particles, applying the force to each.
 
 ```racket
-(define gravity (make-gravity 1))
-(define particles (list (list 0 0 0 0 10) (list 5 5 0 0 20)))
-(apply-force-to-all gravity particles)
-; => particles with gravity applied to each
+(apply-force-to-all physics particles) ; assuming physics and particles are defined earlier
+; => particles with physics applied to each: '((0 0 1.0 1.5 10) (5 5 0.0 2.0 20) (100 0 -49.5 -49.0 1))
 ```
 
 ### Problem 3.3: filter-alive (tail-recursive)
@@ -321,12 +323,12 @@ Write a **tail-recursive** function that takes a force function and a list of pa
 Write a **tail-recursive** function that removes dead particles (life <= 0) from a list.
 
 ```racket
-(define particles (list
+(define particles2 (list
   (list 0 0 0 0 5)   ; alive
   (list 1 1 0 0 0)   ; dead
   (list 2 2 0 0 -1)  ; dead
   (list 3 3 0 0 10))); alive
-(filter-alive particles)
+(filter-alive particles2)
 ; => (list (list 0 0 0 0 5) (list 3 3 0 0 10))  ; or reversed
 ```
 
@@ -335,8 +337,9 @@ Write a **tail-recursive** function that removes dead particles (life <= 0) from
 Write a **tail-recursive** function that draws all particles onto a background.
 
 ```racket
-(define bg (rectangle 400 400 "solid" "black"))
-(draw-all-particles particles bg)
+(define bg (rectangle 400 400 "solid" "white"))
+(draw-all-particles '((50 50 0 0 100) (200 200 0 0 20) (100 150 0 0 30)) bg) ; assumes bg is defined earlier
+; make sure the lifetimes are big enough to have high opacity!
 ; => image with all particles drawn
 ```
 
@@ -357,6 +360,8 @@ Your function should:
 2. Update all particles (move them)
 3. Remove dead particles
 
+This should be a very simple nested function: each of the functions you want is already defined, takes a list of particles as input, and returns a list of particles as output.
+
 ```racket
 (define (simulation-step particles forces)
   ;; forces is a combined force function (from compose-forces)
@@ -372,7 +377,7 @@ Extend your simulation to spawn new particles. The function takes an additional 
   ...)
 ```
 
-*Hint:* Create a helper to spawn `n` particles and cons them onto the particle list.
+*Hint:* Create a helper to spawn `n` particles and cons them onto or append them to the particle list.
 
 ### Problem 4.3: run-simulation
 
@@ -382,7 +387,7 @@ Create a working animation using `big-bang` from `2htdp/universe`.
 (define WIDTH 400)
 (define HEIGHT 400)
 
-(define my-spawner (make-spawner 200 350 2 8 60))
+(define my-spawner (make-spawner 200 350 -8 -2 30))
 (define my-forces (compose-forces (make-gravity 0.3) (make-friction 0.99)))
 
 (define (tick-handler particles)
@@ -402,7 +407,11 @@ Get a fountain working! Particles should spawn at the bottom, shoot upward, arc 
 
 ## Part 5: Your Particle Creation
 
-Create your own particle scene! I expect you to implement at least one new *closure factory* (that is, `make-x`) and at least one new tail recursion function (that is, `do-y`, tail-recursively).
+Create your own particle scene! I expect you to implement at least one of each of the following:
+ - a new *closure factory* (that is, `make-x`)
+ - a new tail recursive function (that is, `do-y`, tail-recursively)
+ - an extension/improvement to a previous feature
+ - a proper context
 
 New Closure Ideas:
  - Repulsion from a point
@@ -411,21 +420,24 @@ New Closure Ideas:
  - Particles with their own gravity
 
 New Tail Recursion ideas:
- -
+ - Remove particles that fall "out of bounds"
+ - Compute the average position of particles (and add it to the particles list for visualization!)
+ - Color shift all particles
+ - **Whatever you define here will probably have to be included in the simulation code!
 
-Some ideas:
+Extension/Improvement:
+ - You should really have better control over spawning velocity: why are x and y fixed to the same range?
+ - You should really have better control over particle colors!
+ - And sizes!!!
+ - Perhaps you want a `spawner-set` which is a list of multiple spawners
 
-- **Fireworks:** Click to launch a rocket that explodes into many particles
-- **Fire:** Particles that rise, fade from yellow to red, and shrink
-- **Rain/Snow:** Particles that fall and accumulate or splash
-- **Swarm:** Particles attracted to the mouse cursor
-- **Galaxy:** Particles orbiting a central attractor
-- **Magic spell:** Combine multiple emitters and forces for a cool effect
-
-Your creation should demonstrate:
-- **Closures:** Custom spawners and/or forces with meaningful configuration
-- **Tail recursion:** Efficient processing (your simulation should handle 500+ particles smoothly)
-- **Creativity:** Something visually interesting!
+Possible contexts:
+- Fireworks
+- Campefire
+- Rain/snow
+- Bug swarm
+- Galaxy
+- Magic!
 
 Use `big-bang` with `on-mouse` or `on-key` handlers if you want interactivity:
 
@@ -442,8 +454,6 @@ Use `big-bang` with `on-mouse` or `on-key` handlers if you want interactivity:
 ## Tips for Success
 
 1. **Test each function independently.** Don't try to run the full simulation until your pieces work.
-
-2. **Start with fewer particles.** Debug with 5-10 particles before scaling up.
 
 3. **Print intermediate values.** Use `printf` to see what's happening if particles aren't behaving correctly.
 
