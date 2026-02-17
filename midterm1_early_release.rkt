@@ -214,7 +214,7 @@
 
 
 ;;; ============================================================
-;;; QUESTION 6: Putting It All Together — make-transformer
+;;; QUESTION 6: Putting It All Together -- make-transformer
 ;;; ============================================================
 
 ;;; 6a: Write a function (make-transformer ops) where ops is a
@@ -252,10 +252,12 @@
 ;;;   1. Adds 1
 ;;;   2. Multiplies by 10
 ;;;   3. Subtracts 5
+;;;   4. Turns it into a string
+;;;   5. Adds "Result: " to the front of the string
 ;;;
-;;; So (my-transform 3) => 35   because 3 -> 4 -> 40 -> 35
+;;; So (my-transform 3) => "Result: 35"   because 3 -> 4 -> 40 -> 35 -> "35" -> "Result: 35"
 
-; (define my-transform (make-transformer (list 'todo 'todo 'todo)))
+; (define my-transform (make-transformer (list 'todo 'todo 'todo 'todo 'todo)))
 
 ;;; Test cases (uncomment to test):
 ; (my-transform 3)    ; => 35
