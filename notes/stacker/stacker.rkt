@@ -12,6 +12,12 @@
 (displayln "Make sure you see this in your output!")
 (define (read-syntax path port) ; port is the source code
   (define src-lines (port->lines port)) ; put every line into a list
+;  (define filtered (filter (lambda (line)
+;                             (if (string=? line "")
+;                                 #t
+;                                 (not (char=? #\;
+;                                              (string-ref line 0)))))
+;                           src-lines))
   (define src-datums (format-datums '(handle ~a) src-lines))
   (define module-datum `(module stacker-mod "stacker.rkt"
                           ,@src-datums))
@@ -54,8 +60,16 @@
 (define (handle [arg #f])
   (cond ((equal? arg +) (push-stack! (+ (pop-stack!) (pop-stack!))))
         ((equal? arg *) (push-stack! (* (pop-stack!) (pop-stack!))))
-        ((number? arg) (push-stack! arg))))
+        ((or (equal? arg -) (equal? arg /)
+             (let ((first pop-stack!)
+                   (second pop-stack!))
+               (push-stack! (arg second first))))
+         ((number? arg) (push-stack! arg))))
 
-(provide handle)
+  (define dump (lambda ()
+                 (displayln (first stack))
+                 (set! stack '())))
 
-(provide + *)
+  (provide handle dump)
+
+  (provide + *)

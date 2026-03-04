@@ -21,26 +21,29 @@
 ;;;
 ;;; 1a: What does src-lines contain after (port->lines port)?
 ;;;     Write it as a Racket list literal.
-;;; Answer:
+;;; Answer: (list 10 20 + 2 *) ; src-lines
 ;;;
 ;;; 1b: After (format-datums '(handle ~a) src-lines), what does
 ;;;     src-datums contain? Write it as a list of s-expressions.
-;;; Answer:
-;;;
+;;; Answer: (list '(handle) '(handle 10) '(handle 20) '(handle +) '(handle 2) '(handle *))
+;;;  '('a 'b 'c)
 ;;; 1c: Write out the full module-datum that is produced.
-;;; Answer:
+;;; Answer: '(module stacker-mod "stacker.rkt"
+;;;             (handle)
+;;;             (handle 10)
+;;;              etc)
 ;;;
 ;;; 1d: Trace the stack after EACH handle call. Fill in the table.
 ;;;
 ;;;     Call              Stack
-;;;     (handle 10)       ???
-;;;     (handle 20)       ???
-;;;     (handle +)        ???
-;;;     (handle 2)        ???
-;;;     (handle *)        ???
+;;;     (handle 10)       '(10)
+;;;     (handle 20)       '(20 10)
+;;;     (handle +)        '(30)
+;;;     (handle 2)        '(2 30)
+;;;     (handle *)        '(60)
 ;;;
 ;;; 1e: What does the program print when run?
-;;; Answer:
+;;; Answer: 60
 
 
 ;;; ============================================================
@@ -54,7 +57,7 @@
 ;;;
 ;;; 2a: Fully expand (stacker-module-begin (handle 5) (handle 3) (handle +)).
 ;;;     Write the resulting s-expression.
-;;; Answer:
+;;; Answer: (#%module-begin (handle 5) (handle 3) (handle +) (display (first stack))
 ;;;
 ;;; 2b: Why does the macro display (first stack) rather than stack?
 ;;;     What would happen if you changed it to (display stack)?
@@ -74,7 +77,10 @@
 ;;;
 ;;; 3a: What predicate detects a comment line?
 ;;;     (string-ref s 0) returns the first character of string s.
-;;;     (char=? c1 c2) compares characters.
+;;;     (char=? c1 c2) compares characters?
+
+#\; ; a semi-colon character!
+
 ;;; Answer:
 ;;;
 ;;; 3b: Modify read-syntax to filter out comment lines as well.
