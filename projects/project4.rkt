@@ -2,6 +2,7 @@
 (require 2htdp/image)
 
 ;;; HELPERS
+(define pi 3.141592653589793) ; not provided in br/quicklang
 ;; Canvas constants
 (define CANVAS-WIDTH 500)
 (define CANVAS-HEIGHT 500)
@@ -28,23 +29,23 @@
 
 ;;; Part 1: Turtle State
 ;;;
-;;; State = (list x y angle pen-down? color image pending)
-;;;           idx: 0  1   2      3       4     5      6
+;;; State = (list x y angle pen-down? color image)
+;;;           idx: 0  1   2      3       4     5 
 
 ; 1.1: state accessors
-; state-x, state-y, state-angle, state-pen?, state-color, state-image, state-pending
+; state-x, state-y, state-angle, state-pen?, state-color, state-image
 
 ; tests
 
 
 ; 1.2: state updaters
-; set-x, set-y, set-angle, set-pen, set-color, set-image, set-pending
+; set-x, set-y, set-angle, set-pen, set-color, set-image
 
 ; tests
 
 
 ; 1.3: initial-state
-; turtle at canvas center, pointing up (angle = -(pi/2)), pen up, color "black", no pending arg
+; turtle at canvas center, pointing up (angle = -(pi/2)), pen up, color "black"
 
 ; tests
 
@@ -61,7 +62,7 @@
     `(module turtle-mod "project4.rkt"
        (handle-turtle-cmds ,@src-datums)))
   (datum->syntax #f module-datum))
-(provide read-syntax)
+(provide quote read-syntax)
 
 
 ;; THE EXPANDER

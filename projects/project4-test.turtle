@@ -1,0 +1,5 @@
+#lang reader "project4.rkt"
+FORWARD 100
+PENUP
+FORWARD 100
+RIGHT 10
