@@ -9,14 +9,14 @@
 ;;; add an additional ' to '(handle ~a) and
 ;;; change the module code to (module stacker-mod br ...)
 ;;; to see what the reader produces
-(displayln "Make sure you see this in your output!")
-(define (read-syntax path port) ; port is the source code
-  (define src-lines (port->lines port)) ; put every line into a list
+(define (read-syntax path port)
+  (define src-lines (filter (lambda (x)
+                              (and (not (string=? x "")) (not (char=? #\; (string-ref x 0)))))
+                            (port->lines port)))
   (define src-datums (format-datums '(handle ~a) src-lines))
   (define module-datum `(module stacker-mod "stacker.rkt"
                           ,@src-datums))
   (datum->syntax #f module-datum))
-
 
 (provide read-syntax) ; expose this function to other modules!
 
@@ -54,8 +54,12 @@
 (define (handle [arg #f])
   (cond ((equal? arg +) (push-stack! (+ (pop-stack!) (pop-stack!))))
         ((equal? arg *) (push-stack! (* (pop-stack!) (pop-stack!))))
+        ((or (equal? arg -) (equal? arg /))
+         (let ((first (pop-stack!))
+               (second (pop-stack!)))
+           (push-stack! (arg second first))))
         ((number? arg) (push-stack! arg))))
 
 (provide handle)
 
-(provide + *)
+(provide + * - /)

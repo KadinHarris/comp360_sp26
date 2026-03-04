@@ -55,8 +55,8 @@
 ;; Complete the two missing definitions below.
 (define (read-syntax path port)
   (define src-lines (port->lines port))
-  (define filtered ...)   ; filter out blank lines and lines starting with ";"
-  (define src-datums ...) ; tokenize each filtered line, then flatten into one list
+  (define filtered 'todo )   ; filter out blank lines and lines starting with ";"
+  (define src-datums 'todo ) ; tokenize each filtered line, then flatten into one list
   (define module-datum
     `(module turtle-mod "project4.rkt"
        (handle-turtle-cmds ,@src-datums)))
@@ -85,7 +85,7 @@
 ; Use for/fold to process all tokens left to right, starting from initial-state.
 ; (This is the direct parallel to handle-args in the funstacker example.)
 
-; (define (handle-turtle-cmds . tokens) ...)
+(define (handle-turtle-cmds . tokens) 'todo )
 (provide handle-turtle-cmds)
 
 ; tests (write a .turtle file and run it!)
