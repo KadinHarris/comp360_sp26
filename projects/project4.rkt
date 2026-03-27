@@ -57,6 +57,7 @@
 (define (read-syntax path port)
   (define src-lines (port->lines port))
   (define filtered 'todo )   ; filter out blank lines and lines starting with ";"
+  (displayln filtered)
   (define src-datums 'todo ) ; tokenize each filtered line, then flatten into one list
   (define module-datum
     `(module turtle-mod "project4.rkt"
