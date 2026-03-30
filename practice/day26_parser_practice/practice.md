@@ -2,7 +2,7 @@
 
 ## Goal
 
-Build a complete **tokenizer** and **parser** for a tiny language called **MiniLet**.
+Build a complete **tokenizer** and **parser** for a tiny language called **Lettify**.
 By the end of class, you will:
 
 1. Write lexer rules that produce **typed tokens** (NUMBER, ID, etc.) and **bare lexemes** for keywords
@@ -10,9 +10,9 @@ By the end of class, you will:
 3. Extend the grammar to handle **bracket expressions**
 4. Watch your tokenizer and parser work together to produce a **parse tree**
 
-## The MiniLet Language
+## The Lettify Language
 
-MiniLet programs look like this:
+Lettify programs look like this:
 
 ```
 let x = 5
@@ -51,7 +51,7 @@ The parser uses this grammar (in `parser.rkt`):
 ```
 program   : statement*
 statement : "let" ID ASSIGN expr
-expr      : term | LBRACKET expr OP expr RBRACKET
+expr      : term | BRACKET-RULE
 term      : NUMBER | ID
 ```
 

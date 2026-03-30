@@ -5,9 +5,15 @@
 ;;; Run this file to test your tokenizer and parser.
 ;;; Tests are organized by part — work through them in order.
 
+<<<<<<< HEAD
 (require brag/support 
          "tokenizer-solution.rkt"
          "parser-solution.rkt")
+=======
+(require brag/support
+         "tokenizer.rkt"
+         "parser.rkt")
+>>>>>>> 030faf7ac9bb1c3b182ea4022c9a73a0234f44af
 
 ;;; Helper: tokenize a string and return the list of tokens
 (define (tokenize str)
