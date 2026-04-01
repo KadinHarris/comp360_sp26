@@ -7,9 +7,22 @@
 ; - byte manipulation
 ; - input reading
 ; - displaying a byte
-; - command "dispatcher", which handles the parse tree
+; - command "dispatcher", which handles the parse tree (macro)
 ; - functions for the above functionality
+(define current-bytes (make-vector 30000 0)) ; allocating memory
+(define pointer 0)
 
+(define (set-current-byte! value)
+  (vector-set! current-bytes pointer value))
+
+(define (current-byte) (vector-ref current-bytes pointer))
+
+(define (plus) (set-current-byte! (+ (current-byte) 1)))
+(define (minus) (set-current-byte! (- (current-byte) 1)))
+(define (gt) (set! pointer (+ pointer 1)))
+(define (lt) (set! pointer (- pointer 1)))
+(define (period) (write-byte (current-byte))) ; write output
+(define (comma) (set-current-byte! (read-byte))) ; read input
 
 ; reminders:
 ; - #' is like ', except instead of a datum, what we get is actual syntax which
@@ -22,7 +35,7 @@
 ; your expander can look the same for now!
 (define-macro (bf-module-begin PARSE-TREE)
   #'(#%module-begin
-     'PARSE-TREE)) ; leave this ticked until we're ready to test!
+     PARSE-TREE)) ; leave this ticked until we're ready to test!
 (provide (rename-out [bf-module-begin #%module-begin]))
 
 ; implementation:
@@ -39,5 +52,10 @@
 
 ; - provide a bf-op handler: bf-op has several cases
 (define-macro-cases bf-op
-  'todo) ; should handle all of the different (bf-op "?") cases
+  [(bf-op "+") #'(plus)]
+  [(bf-op "-") #'(minus)]
+  [(bf-op ">") #'(gt)]
+  [(bf-op "<") #'(lt)]
+  [(bf-op ".") #'(period)]
+  [(bf-op ",") #'(comma)]); should handle all of the different (bf-op "?") cases
 (provide bf-op)
