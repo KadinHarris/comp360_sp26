@@ -5,7 +5,7 @@
 Build a complete **tokenizer** and **parser** for a tiny language called **Lettify**.
 By the end of class, you will:
 
-1. Write lexer rules that produce **typed tokens** (NUMBER, ID, etc.) and **bare lexemes** for keywords
+1. Write lexer rules that produce **typed tokens** (KEYWORD, NUMBER, ID, etc.)
 2. Understand a **brag grammar** that consumes those tokens
 3. Extend the grammar to handle **bracket expressions**
 4. Watch your tokenizer and parser work together to produce a **parse tree**
@@ -31,16 +31,13 @@ let z = [y * 2]
 
 | Token Type | Matches | Examples |
 |------------|---------|----------|
-| *(bare lexeme)* | `let` | `let` |
+| KEYWORD | `let` | `let` |
 | ID | letter followed by letters/digits | `x`, `myVar`, `count1` |
 | NUMBER | one or more digits | `5`, `42`, `100` |
 | ASSIGN | `=` | `=` |
 | OP | `+`, `-`, `*`, `/` | `+` |
 | LBRACKET | `[` | `[` |
 | RBRACKET | `]` | `]` |
-
-Keywords like `let` are returned as **bare lexemes** (untyped strings) rather
-than typed tokens. The parser matches them by their literal value (`"let"`).
 
 Whitespace is **skipped** (not returned as a token).
 
@@ -50,14 +47,14 @@ The parser uses this grammar (in `parser.rkt`):
 
 ```
 program   : statement*
-statement : "let" ID ASSIGN expr
-expr      : term | BRACKET-RULE
+statement : KEYWORD ID ASSIGN expr
+expr      : term | LBRACKET expr OP expr RBRACKET
 term      : NUMBER | ID
 ```
 
 Read this as:
 - A **program** is zero or more statements
-- A **statement** is: the literal `"let"`, then an ID, then ASSIGN, then an expression
+- A **statement** is: a KEYWORD, then an ID, then ASSIGN, then an expression
 - An **expression** is either a single term OR a bracketed expression `[expr OP expr]`
 - A **term** is a NUMBER or an ID
 
@@ -65,7 +62,7 @@ Read this as:
 
 ### Part 1: Build the Tokenizer (~20 min)
 
-Open `tokenizer.rkt`. You will see 7 TODO tasks inside the lexer.
+Open `tokenizer.rkt`. You will see 7 rules to complete.
 Fill in each rule using the hints provided. After each rule, test your
 tokenizer in the REPL:
 
@@ -77,7 +74,7 @@ tokenizer in the REPL:
 
 **Tip:** The order of rules matters! Keywords must come before identifiers
 (because of the First Match principle). The `any-char` fallback at the
-bottom catches anything your rules don't match yet.
+bottom catches anything your rules don't match yet. (Is this a good idea?)
 
 ### Part 2: Complete the Parser (~10 min)
 
