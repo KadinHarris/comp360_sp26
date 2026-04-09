@@ -4,7 +4,7 @@ game beautiful-galaga {
 
                        entity player {
                                      size 10x10
-                                     controls[A D]
+                                     controls [A D]
                                      speed 10
                                       }
                        }

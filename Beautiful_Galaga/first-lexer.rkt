@@ -15,6 +15,7 @@
     "bounce-off" "die-on" "score-on" "game-over"
     "cpu" "bool"))
 
+
 (define beautiful-game-lex
   (lexer
    ; skip whitespace
@@ -27,7 +28,7 @@
    ; handles keywords and id's
    [(:seq letter (:* (:or letter digit #\- #\?)))
      (if (member lexeme keywords)
-         (token (string->symbol lexeme) lexeme)
+         (token (string->symbol (string-upcase lexeme)) lexeme)
          (token 'ID lexeme))]
 
    ["=" (token 'OP lexeme)]
@@ -50,15 +51,15 @@
 ;  (let loop ()
 ;    (define tok (beautiful-game-lex port))
 ;    (cond
-;      [(eof-object? tok) (void)]
-;      [else
-;       (displayln tok)
-;       (loop)])))
+    ;  [(eof-object? tok) (void)]
+   ;   [else
+  ;     (displayln tok)
+ ;      (loop)])))
 
 ;(lex-string "game beautiful-galaga {
-;  entity player {
-;    size 20x20
-;    player? bool
-;  }
+ ; entity player {
+  ;  size 20x20
+   ; player? bool
+  ;}
 ;}
 ;play beautiful-galaga")

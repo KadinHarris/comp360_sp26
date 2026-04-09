@@ -2,23 +2,23 @@
 
 program: game-def play-def
 
-game-def: game ID LBRACE game-item* RBRACE
-play-def: play ID
+game-def: GAME ID LBRACE game-item* RBRACE
+play-def: PLAY ID
 
 game-item: entity-def | canvas-def | controls-def | bounds-def | prop
 
-entity-def: entity ID LBRACE prop* RBRACE
+entity-def: ENTITY ID LBRACE prop* RBRACE
 
-canvas-def: canvas value
-controls-def: controls value
-bounds-def: bounds value
+canvas-def: CANVAS value
+controls-def: CONTROLS value
+bounds-def: BOUNDS value
 
-prop: size value | speed value | color value | picture value | velocity value | bounce-off value | die-on value
-     | score-on value | game-over value | cpu value
+prop: SIZE value | SPEED value | COLOR value | PICTURE value | VELOCITY value | BOUNCE-OFF value | DIE-ON value
+     | SCORE-ON value | GAME-OVER value | CPU value
      | ID value | ID OP value
 
 value: ID | INTEGER | DIMENSION
-     | bool ;treating bool as a value so `player? bool` from lexer works for now
+     | BOOL ;treating bool as a value so `player? bool` from lexer works for now
      | LBRACE value* RBRACE | LBRACKET value* RBRACKET | LPARENTHESIS value* RPARENTHESIS
 
 
