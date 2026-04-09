@@ -44,7 +44,14 @@
     (define lettify-lexer
       (lexer
        ; your trigger / action-item pairs go here!
-       [(union (char-set "ab") (char-set "cd")) lexeme]
+       ["let"                                   lexeme]
+       ["print"                                 lexeme]
+       [(repetition 1 +inf.0 (char-range "0" "9"))    (token 'NUMBER lexeme)]
+       [(concatenation (union (char-range "a" "z") (char-range "A" "Z")) (repetition 0 +inf.0 (union (char-range "a" "z") (char-range "A" "Z") (char-range "0" "9"))))  (token 'ID lexeme)]
+       [(char-set "+-*/")                                 (token 'OP lexeme)]
+       ["="                                           (token 'ASSIGN lexeme)]
+       ["["                                         (token 'LBRACKET lexeme)]
+       ["]"                                         (token 'RBRACKET lexeme)]
        ; provided:
        [whitespace (next-token)] ; skip whitespace
        [any-char (next-token)]   ; ignore unrecognized characters

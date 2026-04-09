@@ -11,6 +11,7 @@
 ; - functions for the above functionality
 (define current-bytes (make-vector 30000 0)) ; allocating memory
 (define pointer 0)
+<<<<<<< Updated upstream
 
 (define (set-current-byte! value)
   (vector-set! current-bytes pointer value))
@@ -23,6 +24,14 @@
 (define (lt) (set! pointer (- pointer 1)))
 (define (period) (write-byte (current-byte))) ; write output
 (define (comma) (set-current-byte! (read-byte))) ; read input
+=======
+(define (plus) (set-current byte! (- current-byte 1)))
+(define (minus) ...)
+(define (gt) ...)
+(define (lt) ...)
+(define (period) ...)
+(define (comma) ...)
+>>>>>>> Stashed changes
 
 ; reminders:
 ; - #' is like ', except instead of a datum, what we get is actual syntax which

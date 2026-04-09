@@ -21,8 +21,8 @@
 
 
 program : statement*
-statement : "let" ID ASSIGN expr
-expr : term ; fix this!
+statement : "let" ID ASSIGN expr | "print" expr*
+expr : term | LBRACKET expr OP expr RBRACKET
 term : NUMBER | ID
 
 
