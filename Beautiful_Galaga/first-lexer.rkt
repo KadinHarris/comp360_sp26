@@ -44,21 +44,21 @@
 
 
 
-(define (lex-string str)
-  (define port (open-input-string str))
-  (port-count-lines! port)
-  (let loop ()
-    (define tok (beautiful-game-lex port))
-    (cond
-      [(eof-object? tok) (void)]
-      [else
-       (displayln tok)
-       (loop)])))
+;(define (lex-string str)
+;  (define port (open-input-string str))
+;  (port-count-lines! port)
+;  (let loop ()
+;    (define tok (beautiful-game-lex port))
+;    (cond
+;      [(eof-object? tok) (void)]
+;      [else
+;       (displayln tok)
+;       (loop)])))
 
-(lex-string "game beautiful-galaga {
-  entity player {
-    size 20x20
-    player? bool
-  }
-}
-play beautiful-galaga")
+;(lex-string "game beautiful-galaga {
+;  entity player {
+;    size 20x20
+;    player? bool
+;  }
+;}
+;play beautiful-galaga")
