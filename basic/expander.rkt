@@ -15,7 +15,7 @@
        LINE ...   ; we can put in a SHIMS ' to see what the expander is producing
        (define line-table
          (apply hasheqv (append (list NUM LINE-FUNC) ...))) ; we can also add code inside this macro
-       (void (run line-table)))))
+       (void (play line-table)))))
 (provide (rename-out [b-module-begin #%module-begin]))
 
 (provide (rename-out [b-module-begin #%module-begin]))
