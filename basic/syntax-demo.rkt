@@ -5,9 +5,9 @@
 (displayln d)              ;=> (+ 1 x)
 (syntax? d)                ;=> #f
 (car d)                    ;=> '+    (a symbol)
-
 ;; Syntax object from a template
 'SYNTAX
+(define x 5)
 (define s #'(+ 1 x))
 (displayln s)              ;=> #<syntax:...:line:9:12 (+ 1 x)>
 (syntax? s)                ;=> #t
@@ -16,7 +16,7 @@
 (syntax->datum s)          ;=> '(+ 1 x)   <- strips context to get the datum
 (car (syntax-e s))         ;=> #<syntax:...:line:9:13 +>
 (syntax->datum (car (syntax-e s)))
-;(eval s)                   ;=> error, x not defined
+(eval s)                   ;=> error, x not defined
 ; be VERY careful with eval!
 ; better yet, just don't use it!
 
@@ -27,7 +27,7 @@
                  [(ARG ...) #'(MID ...)])        ; redefines (MID ...) as (ARG ...)
     #'(list ARG ... THREE TWO ONE)))             ; what is ARG ... now? What is THREE? TWO? ONE?
 
-(m3 25 42 ("foo" "bar" "zam")) ; '(25 42 "zam" "bar" "foo")
+(m3 25 42 26 55 44 22 ("foo" "bar" "zam")) ; '(25 42 "zam" "bar" "foo")
 
 (define-macro (swap-around FIRST (A B) MIDDLE ... (X Y) LAST) ; what will these patterns be?
   (with-pattern ([(THING ...) #'(MIDDLE ...)])                ; what will (THING ...) become?

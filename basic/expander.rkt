@@ -18,6 +18,7 @@
        (void (run line-table)))))
 (provide (rename-out [b-module-begin #%module-begin]))
 
+(provide (rename-out [b-module-begin #%module-begin]))
 (struct end-program-signal ())
 (struct change-line-signal (val))
 

@@ -55,7 +55,7 @@
   [(bf-op "+") #'(plus)]
   [(bf-op "-") #'(minus)]
   [(bf-op ">") #'(gt)]
-  [(bf-op "<") #'(lt)]
+  [(bf-op "<") #'(lt)kaj]
   [(bf-op ".") #'(period)]
   [(bf-op ",") #'(comma)]); should handle all of the different (bf-op "?") cases
 (provide bf-op)
