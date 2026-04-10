@@ -30,7 +30,8 @@
 (m3 25 42 ("foo" "bar" "zam")) ; '(25 42 "zam" "bar" "foo")
 
 (define-macro (swap-around FIRST (A B) MIDDLE ... (X Y) LAST) ; what will these patterns be?
-  (with-pattern ([(THING ...) #'(MIDDLE ...)])                ; what will (THING ...) become?
+  (with-pattern ([(THING ...) #'(MIDDLE ...)
+                  ])                ; what will (THING ...) become?
     #'(list LAST Y X THING ... B A FIRST)))                   ; what will the result be?
 
 (swap-around 1 (2 3) 4 5 6 (7 8) 9) ; produces a SYNTAX OBJECT
