@@ -1,9 +1,6 @@
 #lang br/quicklang
 (provide (matching-identifiers-out #rx"^smpl-" (all-defined-out)))
 
-;; Variable storage
-(define vars (make-hash))
-
 ;; The #%module-begin macro: destructures the parse tree
 ;; and places all statements at the module top level
 (define-macro (smpl-module-begin (smpl-program STATEMENT ...))
@@ -11,14 +8,15 @@
      STATEMENT ...))
 (provide (rename-out [smpl-module-begin #%module-begin]))
 
-;; Assignment: store a value in the variable hash
-(define (smpl-assign id val)
-  (hash-set! vars id val))
+;; Assignment: expand (smpl-assign "x" <expr>) into (define x <expr>)
+(define-macro (smpl-assign ID VAL)
+  (with-pattern ([VAR-NAME (format-id #'ID "~a" (syntax->datum #'ID))])
+    #'(define VAR-NAME VAL)))
 
-;; Variable lookup: retrieve a value from the hash
-(define (smpl-id name)
-  (hash-ref vars name
-            (λ () (error 'smpl "undefined variable: ~a" name))))
+;; Variable lookup: expand (smpl-id "x") into x
+(define-macro (smpl-id ID)
+  (with-pattern ([VAR-NAME (format-id #'ID "~a" (syntax->datum #'ID))])
+    #'VAR-NAME))
 
 ;; Print: concatenate and display all values
 (define (smpl-print . vals)

@@ -4,9 +4,9 @@
 (define (read-syntax path port)
   (define tokens (apply-tokenizer make-tokenizer port))
   (strip-bindings
-   #`(module smpl-tokens-mod day33_SMPL/tokenize-only
+   #`(module smpl-tokens-mod "tokenize-only.rkt"
        #,@tokens)))
-(module+ reader (provide read-syntax))
+(provide read-syntax)
 
 (define-macro (tokenize-only-mb TOKEN ...)
   #'(#%module-begin

@@ -1,4 +1,4 @@
-#lang day33_SMPL
+#lang reader "main.rkt"
 a = 10
 b = 3
 print "a + b = " ; a + b

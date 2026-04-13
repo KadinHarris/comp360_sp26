@@ -4,8 +4,7 @@
 (define (read-syntax path port)
   (define parse-tree (parse path (make-tokenizer port path)))
   (strip-bindings
-   #`(module smpl-mod day33_SMPL/expander
+   #`(module smpl-mod "expander.rkt"
        #,parse-tree)))
 
-(module+ reader
-  (provide read-syntax))
+(provide read-syntax)

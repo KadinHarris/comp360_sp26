@@ -23,6 +23,19 @@
 ;; ============================================================
 
 
+
+;; BEFORE YOU BEGIN:
+;;  - Run tokenize-only-test.rkt or read lexer.rkt:
+;;    what are the tokens in this language?
+;;  - Run parse-only-test.rkt AND the parser:
+;;    what kind of parse-tree nodes are there?
+
+;; Therefore, what functions/macros/definitions will we need
+;; for this language?
+;; ANSWER:
+
+
+
 ;; ============================================================
 ;; TOPIC 1: The provide statement
 ;; ============================================================
@@ -40,20 +53,17 @@
 ;; ============================================================
 ;; TOPIC 2: Variable storage
 ;; ============================================================
-;; SMPL supports variable assignment (x = 5). We need somewhere
-;; to store variable values at runtime. A mutable hash table
-;; is the simplest approach:
-
-(define vars (make-hash))
-
-;; When we see (smpl-assign "x" 5), we'll store "x" -> 5.
-;; When we see (smpl-id "x"), we'll look up "x".
+;; SMPL supports variable assignment (x = 5). Instead of a hash
+;; table, we use macros to expand assignments into real Racket
+;; (define ...) forms, and variable references into identifiers.
+;; format-id converts the string name into a Racket identifier
+;; at compile time.
 
 
 ;; ============================================================
 ;; TOPIC 3: The #%module-begin macro (syntax templates/patterns)
 ;; ============================================================
-;; Every Racket module needs a #%module-begin form at the top.
+;; Every Racket module needs a #%module-begin form.
 ;; The reader wraps our parsed tree in:
 ;;   (module smpl-mod day33_SMPL/expander (smpl-program ...))
 ;;
@@ -62,10 +72,10 @@
 ;; and emits #%module-begin with the statements inside.
 ;;
 ;; KEY CONCEPTS:
-;;   - define-macro creates a compile-time transformation
+;;   - define-macro creates a compile-time transformation (vs run-time execution)
 ;;   - The pattern (smpl-module-begin (smpl-program STATEMENT ...))
 ;;     matches the incoming syntax and binds STATEMENT to each
-;;     child of smpl-program
+;;     child node of smpl-program
 ;;   - #'(...) is a "syntax template" — it creates new syntax
 ;;     with the pattern variables filled in
 ;;   - The ... (ellipsis) means "repeat for each match"
@@ -79,46 +89,45 @@
      'TODO))
 
 (provide (rename-out [smpl-module-begin #%module-begin]))
-;; ^ This rename is what makes our macro THE module-begin for SMPL.
+;; This rename is what makes our macro THE module-begin for SMPL.
 
 
 ;; ============================================================
-;; TOPIC 4: Variable definitions — smpl-assign
+;; TOPIC 4: Variable definitions - smpl-assign
 ;; ============================================================
 ;; The parser produces: (smpl-assign "x" <expr>)
 ;; where "x" is the variable name (a string from the ID token)
 ;; and <expr> is the value expression.
 ;;
-;; Since the arguments are evaluated before the function is called,
-;; <expr> will already be a number by the time we receive it.
-;; We just need to store it in our hash table.
+;; We use a macro to expand (smpl-assign "x" <expr>) into
+;; (define x <expr>), turning SMPL variables into real Racket
+;; bindings.
 ;;
-;; TODO: Define smpl-assign as a function that stores a value
-;; in the vars hash table.
-;; HINT: use hash-set!
+;; TODO: Fill in the macro body.
+;; GIVEN: use format-id to create an identifier from the string,
+;;        with-pattern to bind it, and expand to (define VAR-NAME VAL).
 
-(define (smpl-assign id val)
-  'TODO)
+(define-macro (smpl-assign ID VAL)
+  (with-pattern ([VAR-NAME (format-id #'ID "~a" (syntax->datum #'ID))])
+    'TODO)) ; this just needs to define a variable VAR-NAME with value VAL!
 
 
 ;; ============================================================
-;; TOPIC 5: Variable lookup — smpl-id
+;; TOPIC 5: Variable lookup - smpl-id
 ;; ============================================================
 ;; The parser produces: (smpl-id "x")
-;; We need to look up the variable's value in the hash table.
+;; We expand this into the actual Racket identifier, so
+;; (smpl-id "x") becomes just x.
 ;;
-;; TODO: Define smpl-id as a function that retrieves a value
-;; from the vars hash table.
-;; HINT: use hash-ref. For a nice error on undefined variables:
-;;   (hash-ref vars name
-;;     (λ () (error 'smpl "undefined variable: ~a" name)))
+;; TODO: Fill in the macro body.
 
-(define (smpl-id name)
-  'TODO)
+(define-macro (smpl-id ID)
+  (with-pattern ([VAR-NAME (format-id #'ID "~a" (syntax->datum #'ID))])
+    'TODO)) ; this just needs to expand an ID to its actual variable name!
 
 
 ;; ============================================================
-;; TOPIC 6: Print — smpl-print
+;; TOPIC 6: Print - smpl-print
 ;; ============================================================
 ;; The parser produces: (smpl-print val1 val2 ...)
 ;; where each val is either a STRING or an evaluated expression.
@@ -158,10 +167,9 @@
 ;;       [else
 ;;        (define op (car remaining))     ; "+" or "-"
 ;;        (define val (cadr remaining))   ; next number
-;;        (helper ??? (cddr remaining))]))
+;;        (define new-result ???) ; this is for you to figure out! use val and result
+;;        (helper new-result (cddr remaining))]))
 ;;   (helper (car args) (cdr args))
-;;
-;; Choose + or - based on whether op is "+".
 
 (define (smpl-sum . args)
   'TODO)
