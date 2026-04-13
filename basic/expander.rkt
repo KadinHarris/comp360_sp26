@@ -15,7 +15,7 @@
        LINE ...   ; we can put in a SHIMS ' to see what the expander is producing
        (define line-table
          (apply hasheqv (append (list NUM LINE-FUNC) ...))) ; we can also add code inside this macro
-       (void (play line-table)))))
+       (void (run line-table)))))
 (provide (rename-out [b-module-begin #%module-begin]))
 
 (provide (rename-out [b-module-begin #%module-begin]))
@@ -29,7 +29,8 @@
   (define line-vec
     (list->vector (sort (hash-keys line-table) <)))
   (with-handlers ([end-program-signal? (λ (exn-val) (void))])
-    (for/fold ([line-idx 0])
+    ; this variable gets set by the return value of the loop in each iteration
+    (for/fold ([line-idx 0]) 
               ([i (in-naturals)]
                #:break (>= line-idx (vector-length line-vec)))
       (define line-num (vector-ref line-vec line-idx))
