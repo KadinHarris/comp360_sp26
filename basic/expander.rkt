@@ -18,6 +18,7 @@
        (void (run line-table)))))
 (provide (rename-out [b-module-begin #%module-begin]))
 
+(provide (rename-out [b-module-begin #%module-begin]))
 (struct end-program-signal ())
 (struct change-line-signal (val))
 
@@ -28,7 +29,8 @@
   (define line-vec
     (list->vector (sort (hash-keys line-table) <)))
   (with-handlers ([end-program-signal? (λ (exn-val) (void))])
-    (for/fold ([line-idx 0])
+    ; this variable gets set by the return value of the loop in each iteration
+    (for/fold ([line-idx 0]) 
               ([i (in-naturals)]
                #:break (>= line-idx (vector-length line-vec)))
       (define line-num (vector-ref line-vec line-idx))

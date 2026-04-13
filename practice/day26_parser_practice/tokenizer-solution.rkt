@@ -23,6 +23,7 @@
                                                    (char-range "0" "9"))))
         (token 'ID lexeme)]
        [(char-set "+*-/") (token 'OP lexeme)]
+       [(from/to "{" "}")
        ["=" (token 'ASSIGN lexeme)]
        ["[" (token 'LBRACKET lexeme)]
        ["]" (token 'RBRACKET lexeme)]
