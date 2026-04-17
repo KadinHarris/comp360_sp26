@@ -2,42 +2,39 @@
 
 program: game-def play-def
 
-game-def: GAME ID LBRACE game-item* RBRACE
-play-def: PLAY ID
+game-def: /GAME ID /LBRACE game-item* /RBRACE
+play-def: /PLAY ID
 
-game-item: entity-def | canvas-def | controls-def | bounds-def | prop
+game-item: entity-def
+         | canvas-def
 
-entity-def: ENTITY ID LBRACE prop* RBRACE
+entity-def: /ENTITY ID /LBRACE entity-prop* /RBRACE
 
-canvas-def: CANVAS value
-controls-def: CONTROLS value
-bounds-def: BOUNDS value
+canvas-def: /CANVAS DIMENSION
 
-prop: SIZE value | SPEED value | COLOR value | PICTURE value | VELOCITY value | BOUNCE-OFF value | DIE-ON value
-     | SCORE-ON value | GAME-OVER value | CPU value
-     | ID value | ID OP value
-
-value: ID | INTEGER | DIMENSION
-     | BOOL ;treating bool as a value so `player? bool` from lexer works for now
-     | LBRACE value* RBRACE | LBRACKET value* RBRACKET | LPARENTHESIS value* RPARENTHESIS
+entity-prop: size-def | speed-def | color-def | picture-def | velocity-def  | controls-def | bounds-def
+           | bounce-off-def | die-on-def | score-on-def  | game-over-def | cpu-def | custom-prop
 
 
+size-def: /SIZE value
+speed-def: /SPEED value
+color-def: /COLOR value
+picture-def: /PICTURE value
+velocity-def: /VELOCITY value
 
-;reference \/
+controls-def: /CONTROLS control-list
+bounds-def: /BOUNDS value
+bounce-off-def: /BOUNCE-OFF value
 
-;(define (lex-string str)
- ; (define port (open-input-string str))
-  ;(port-count-lines! port)
-  ;(let loop ()
-   ; (define tok (beautiful-game-lex port))
-    ;(unless (eof-object? (srcloc-token-token tok))
-     ; (displayln (srcloc-token-token tok))
-      ;(loop))))
+die-on-def: /DIE-ON value
+score-on-def: /SCORE-ON value
+game-over-def: /GAME-OVER value
+cpu-def: /CPU value
+custom-prop: ID value | ID OP value
 
-;(lex-string "game beautiful-galaga {
- ; entity player {
-  ;  size 20x20
-   ; player? bool
-  ;}
-;}
-;play beautiful-galaga")
+control-list: /LBRACKET @control-key* /RBRACKET
+
+control-key: ID | BOOL | INTEGER
+
+value: ID | INTEGER | DIMENSION | BOOL
+     | /LBRACE @value* /RBRACE | /LBRACKET @value* /RBRACKET | /LPARENTHESIS @value* /RPARENTHESIS
