@@ -32,7 +32,7 @@
 
 ;; Therefore, what functions/macros/definitions will we need
 ;; for this language?
-;; ANSWER:
+;; ANSWER: Everything in the parse-tree needs to be a macro or function
 
 
 
@@ -86,8 +86,8 @@
 
 (define-macro (smpl-module-begin (smpl-program STATEMENT ...))
   #'(#%module-begin
-     'TODO))
-
+     STATEMENT ...))
+ 
 (provide (rename-out [smpl-module-begin #%module-begin]))
 ;; This rename is what makes our macro THE module-begin for SMPL.
 
@@ -109,7 +109,7 @@
 
 (define-macro (smpl-assign ID VAL)
   (with-pattern ([VAR-NAME (format-id #'ID "~a" (syntax->datum #'ID))])
-    'TODO)) ; this just needs to define a variable VAR-NAME with value VAL!
+    (define VAR-NAME VAL))) ; this just needs to define a variable VAR-NAME with value VAL!
 
 
 ;; ============================================================
@@ -123,7 +123,7 @@
 
 (define-macro (smpl-id ID)
   (with-pattern ([VAR-NAME (format-id #'ID "~a" (syntax->datum #'ID))])
-    'TODO)) ; this just needs to expand an ID to its actual variable name!
+    (define ID VAR-NAME))) ; this just needs to expand an ID to its actual variable name!
 
 
 ;; ============================================================
@@ -141,7 +141,7 @@
 ;;   - displayln prints with a newline
 
 (define (smpl-print . vals)
-  'TODO)
+  ())
 
 
 ;; ============================================================
