@@ -14,76 +14,109 @@
 (define BLANK-CANVAS (rectangle WIDTH HEIGHT "solid" "white"))
 
 (define projectiles (list))
-(define enemies (list))
+(define enemies (list (cons 200 10)))
 
-;                    x   y lives  speed image
-(define state (list 250 250 3       10   BLANK-CANVAS  projectiles enemies))
-;               idx  0   1  2       3         4             5         6
+;                    x   y lives  speed 
+(define state (list 250 250 3       10  projectiles enemies))
+;               idx  0   1  2       3         4        5         
 
 
-; Getters for state
-(define (state-x state)
+; PLAYER ACCESSORS
+(define (player-x state)
   (car state))
 
-(define (state-y state)
+(define (player-y state)
   (car (cdr state)))
 
-(define (state-lives state)
+(define (player-lives state)
   (car (cdr (cdr state))))
 
-(define (state-speed state)
+(define (player-speed state)
   (car (cdr (cdr (cdr state)))))
 
-(define (state-image state)
+; PROJECTILE ACCESSORS
+(define (state-projectiles state)
   (car (cdr (cdr (cdr (cdr state))))))
 
-; returns the list of projectiles
-(define (state-projectiles state)
+(define (state-projectile state)
+         (car (state-projectiles state)))
+
+(define (state-projectile-x projectile)
+  (car projectile))
+
+(define (state-projectile-y projectile)
+  (car (cdr projectile)))
+
+
+; ENEMY ACCESSORS
+(define (state-enemies state)
   (car (cdr (cdr (cdr (cdr (cdr state)))))))
 
-(define (state-projectile state)
-  (car (state-projectiles state)))
-
-; Setters for state
-(define (set-x s val)
+; PLAYER SETTERS 
+(define (set-player-x s val)
   (list-set s 0 val))
 
-(define (set-y s val)
+(define (set-player-y s val)
   (list-set s 1 val))
 
 (define (set-lives s val)
   (list-set s 2 val))
 
-(define (set-speed s val)
+(define (set-player-speed s val)
   (list-set s 3 val))
 
-(define (set-image s val)
-  (list-set s 4 val))
 
-
-
-
+; CONTROLS
 ; Takes in the state of the game and moves the player position left by 10
 (define (move-left s)
-  (cond [(equal? (state-x s) 0) s] ; return same state
-        [else (set-x s (- (state-x s) (state-speed s)))])) ; return state with x - speed
+  (cond [(equal? (player-x s) 0) s] ; return same state
+        [else (set-player-x s (- (player-x s) (player-speed s)))])) ; return state with x - speed
 
 ; Takes in the state of the game and moves the player position right by 10
 (define (move-right s)
-  (cond [(equal? (state-x s) WIDTH) s] ; return same pos
-        [else (set-x s (+ (state-x s) (state-speed s)))])) ; return pons with x + speed
+  (cond [(equal? (player-x s) WIDTH) s] ; return same pos
+        [else (set-player-x s (+ (player-x s) (player-speed s)))])) ; return pons with x + speed
 
 (define (move-up s)
-  (cond [(equal? (state-y s) 0) s]
-        [else (set-y s (- (state-y s) (state-speed s)))]))
+  (cond [(equal? (player-y s) 0) s]
+        [else (set-player-y s (- (player-y s) (player-speed s)))]))
 
 (define (move-down s)
-  (cond [(equal? (state-y s) HEIGHT) s]
-        [else (set-y s (+ (state-y s) (state-speed s)))]))
+  (cond [(equal? (player-y s) HEIGHT) s]
+        [else (set-player-y s (+ (player-y s) (player-speed s)))]))
 
 ; Places a projectile at the player position
 (define (shoot s)
-  (list-set s 5 (cons (cons (state-x s) (state-y s)) (state-projectiles s))))
+  (list-set s 4 (cons (cons (player-x s) (player-y s)) (state-projectiles s)))) ; cons a new position to the projectiles list
+
+(define (spawn-enemy s x y)
+  (list-set s 5 (cons (cons x y) (state-enemies s))))
+
+
+; DRAWING 
+; Takes in the current state and an image to draw onto
+(define (draw-player state image)
+  (place-image (circle 5 "solid" "red")
+               (player-x state) (player-y state)
+               image))
+
+; Recursively travels the list of projectiles in state and accumulates an image based on projectile positions
+(define (draw-projectiles projectiles image)
+  (define (helper projectiles acc)
+    (cond [(empty? projectiles) acc]
+          [else (helper (cdr projectiles) (place-image (circle 3 "solid" "green")
+                                                       (car (car projectiles)) (cdr (car projectiles))
+                                                       acc))]))
+  (helper projectiles image))
+
+; Recursively travels the list of enemies in state and accumulates an image based on projectile positions
+(define (draw-enemies enemies image)
+  (define (helper enemies acc)
+    (cond [(empty? enemies) acc]
+          [else (helper (cdr enemies) (place-image (circle 5 "solid" "blue")
+                                                       (car (car enemies)) (cdr (car enemies))
+                                                       acc))]))
+  (helper enemies image))
   
 
 ;(define (update s)
@@ -92,14 +125,11 @@
 
 ; Create an image of a dot at the given position
 (define (render state)
-       (place-image
-        (circle 5 "solid" "red")
-                                (state-x state) (state-y state)
-                                (place-image (circle 5 "solid" "blue")
-                                             200 10
-                                             (place-image (circle 2 "solid" "green")
-                                                          200 200
-                                                          (empty-scene WIDTH HEIGHT)))))
+  ; access the player position from state, draw it
+  ; access the projectiles list from state, draw them all (recursively?)
+  ; (draw-player (draw-projectiles (draw-enemies background)))
+       (draw-player state (draw-projectiles (state-projectiles state)
+                                             (draw-enemies (state-enemies state) (empty-scene WIDTH HEIGHT)))))
   
 
 ; CONTROLS
@@ -111,6 +141,7 @@
     [(key=? a-key "up")    (move-up w)]
     [(key=? a-key "down")  (move-down w)]
     [(key=? a-key " ") (shoot w)]
+    [(key=? a-key "s") (spawn-enemy w 200 30)]
     [else w]))
 
 
