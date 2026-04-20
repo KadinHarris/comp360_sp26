@@ -65,7 +65,13 @@
 (define (set-player-speed s val)
   (list-set s 3 val))
 
+; PROJECTILE SETTERS
+(define (set-projectiles s val)
+  (list-set s 4 val))
 
+
+;
+;
 ; CONTROLS
 ; Takes in the state of the game and moves the player position left by 10
 (define (move-left s)
@@ -117,10 +123,14 @@
                                                        (car (car enemies)) (cdr (car enemies))
                                                        acc))]))
   (helper enemies image))
+
+(define (move-projectile projectile)
+  (cons (car projectile) (- (cdr projectile) 5)))
   
 
-;(define (update s)
- ;(display s))
+(define (update s)
+ (cond [(empty? (state-projectiles s)) s]
+       [else (set-projectiles s (map move-projectile (state-projectiles s)))]))
 
 
 ; Create an image of a dot at the given position
@@ -147,6 +157,6 @@
 
 ; RUN GAME
 (big-bang state
-  ;[on-tick update] ;change enemy data automatically
+  [on-tick update] ;change enemy data automatically
   [on-key change] ; change user data based on input
   [to-draw render])
