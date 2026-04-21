@@ -12,6 +12,8 @@
 (define HEIGHT 400)
 (define SPEED 5)
 (define BLANK-CANVAS (rectangle WIDTH HEIGHT "solid" "white"))
+(define projectile-speed 5)
+(define enemy-speed 2)
 
 (define projectiles (list))
 (define enemies (list (cons 200 10)))
@@ -69,6 +71,9 @@
 (define (set-projectiles s val)
   (list-set s 4 val))
 
+; ENEMY SETTERS
+(define (set-enemies s val)
+  (list-set s 5 val))
 
 ;
 ;
@@ -124,13 +129,19 @@
                                                        acc))]))
   (helper enemies image))
 
-(define (move-projectile projectile)
-  (cons (car projectile) (- (cdr projectile) 5)))
+; moves one projectile's y up by 5
+(define (move-projectile projectile projectile-speed)
+  (cons (car projectile) (- (cdr projectile) projectile-speed)))
+
+; moves an enemy's y down by 5
+(define (move-enemy enemy enemy-speed)
+  (cons (car enemy) (+ (cdr enemy) enemy-speed)))
   
 
 (define (update s)
- (cond [(empty? (state-projectiles s)) s]
-       [else (set-projectiles s (map move-projectile (state-projectiles s)))]))
+ (let* ([s1 (set-projectiles s (map (lambda (item) (move-projectile item projectile-speed)) (state-projectiles s)))]
+        [s2 (set-enemies s1 (map (lambda (item) (move-enemy item enemy-speed)) (state-enemies s)))])
+   s2))
 
 
 ; Create an image of a dot at the given position
