@@ -8,9 +8,6 @@
       (cons v (cdr lst))
       (cons (car lst) (list-set (cdr lst) (- i 1) v))))
 
-;(define on-screen 
- ; (cond [()]))
-
 
 (define WIDTH 400)
 (define HEIGHT 400)
@@ -22,11 +19,13 @@
 (define projectiles (list))
 (define enemies (list (cons 200 10)))
 
-;                         x           y     lives  speed 
-(define state (list (/ WIDTH 2) (/ HEIGHT 2) 3   PLAYER-SPEED  projectiles enemies))
-;               idx      0            1      2       3              4        5         
+;                         x           y       lives    speed                           score
+(define state (list (/ WIDTH 2)  (- HEIGHT 10)  3   PLAYER-SPEED  projectiles enemies   0))
+;               idx      0            1         2       3              4        5       6
 
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; ACCeSSORS AND STATERS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; PLAYER ACCESSORS
 (define (player-x state)
   (car state))
@@ -61,6 +60,9 @@
 (define (state-enemies state)
   (car (cdr (cdr (cdr (cdr (cdr state)))))))
 
+(define (state-score state)
+  (car (cdr (cdr (cdr (cdr (cdr (cdr state))))))))
+
 ; PLAYER SETTERS 
 (define (set-player-x s val)
   (list-set s 0 val))
@@ -82,9 +84,12 @@
 (define (set-enemies s val)
   (list-set s 5 val))
 
-;
-;
+(define (set-score s val)
+  (list-set s 6 val))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; CONTROLS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Takes in the state of the game and moves the player position left by 10
 (define (move-left s)
   (cond [(equal? (player-x s) 0) s] ; return same state
@@ -117,7 +122,7 @@
         [else #t]))
 
 (define (collides? p e)
-  (and (< (abs (- (car p) (car e))) 5)
+  (and (< (abs (- (car p) (car e))) 10)
        (< (abs (- (cdr p) (cdr e))) 5)))
 
 
@@ -167,6 +172,11 @@
 (define (filter-projectiles projectiles enemies)
   (filter (lambda (p) (not (enemy-hit? p enemies))) projectiles))
 
+(define (player-hit? p-pos enemies)
+   (cond [(empty? enemies) #f]
+        [(collides? p-pos (car enemies)) #t]
+        [else (player-hit? p-pos (cdr enemies))]))
+
 ; updates the positions of the projectiles list and gets rid of any that leave the screen
 (define (update-proj projs)
         (filter on-screen? (map (lambda (item) (move-projectile item projectile-speed)) projs)))
@@ -174,6 +184,8 @@
 ; updates the positions of the enemies list and gets rid of any that leave the screen
 (define (update-enemies enemies proj)
   (filter on-screen? (map (lambda (item) (move-enemy item enemy-speed)) enemies)))
+
+
 
 
 ; Update game state
@@ -184,10 +196,18 @@
   ; CHECK COLLISIONS
   (define filtered-enemies (filter-enemies e proj))
   (define filtered-proj (filter-projectiles proj e))
+  
+  (define new-state
+    (list (player-x s) (player-y s) (player-lives s) (player-speed s) filtered-proj  filtered-enemies (state-score s))
+    )
 
-  (list (player-x s) (player-y s) (player-lives s) (player-speed s) filtered-proj filtered-enemies))
-(provide update)
-     
+  (if (empty? filtered-enemies)
+      (spawn-enemy new-state (+ 5 (random (- WIDTH 5))) (random (quotient HEIGHT 3)))
+      new-state)
+
+  )
+
+(provide update)     
 
 ; extracts game datac
 ; extracts player data (define p (get-player-data s)
@@ -215,7 +235,7 @@
     [(key=? a-key "up")    (move-up w)]
     [(key=? a-key "down")  (move-down w)]
     [(key=? a-key " ") (shoot w)]
-    [(key=? a-key "s") (spawn-enemy w 200 30)]
+    ;[(key=? a-key "s") (spawn-enemy w (random WIDTH) (random (quotient HEIGHT 3)))]
     [else w]))
 
 
