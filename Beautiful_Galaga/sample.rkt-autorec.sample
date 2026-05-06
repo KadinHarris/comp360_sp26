@@ -1,0 +1,11 @@
+#lang reader "main.rkt"
+game Pong {
+    canvas 400x400
+    entity ball {
+        size 20
+        color red
+        picture circle
+        velocity (3 2)
+    }
+}
+play Pong

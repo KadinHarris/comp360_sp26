@@ -22,12 +22,9 @@
                  [H (string->number (cadr parts))])
     #'(register-canvas! W H)))
 
-
 ;; play-def: PLAY ID
 (define-macro (play-def NAME)
-  #'(cond
-      [(equal? 'NAME "galaga") (run-game-rkt)]
-      [else (play-game! 'NAME)]))
+  #'(play-game! 'NAME))
 
 ;; game-item: entity-def | canvas-def
 ;; Just a wrapper the parser inserts; unwrap it.
@@ -68,10 +65,7 @@
 
 (define-macro (control-list KEY ...)
   (with-pattern ([(SYM ...)
-                  (map (λ (s)
-                         (define d (syntax->datum s))
-                         (cond [(string? d) (string->symbol d)]
-                               [else d]))
+                  (map (λ (s) (string->symbol (syntax->datum s)))
                        (syntax->list #'(KEY ...)))])
     #'(list 'SYM ...)))
 
@@ -85,18 +79,3 @@
   [(_ KEY OP VAL)
    (with-pattern ([SYM (string->symbol (format "~a" (syntax->datum #'KEY)))])
      #'(λ (n) (set-entity-prop! n 'SYM VAL)))])
-
-(define-macro (bounds-def V)
-  #'(λ (n) (set-entity-prop! n 'bounds V)))
-
-(define-macro (die-on-def V)
-  #'(λ (n) (set-entity-prop! n 'die-on V)))
-
-(define-macro (score-on-def V)
-  #'(λ (n) (set-entity-prop! n 'score-on V)))
-
-(define-macro (game-over-def V)
-  #'(λ (n) (set-entity-prop! n 'game-over V)))
-
-(define-macro (cpu-def V)
-  #'(λ (n) (set-entity-prop! n 'cpu V)))

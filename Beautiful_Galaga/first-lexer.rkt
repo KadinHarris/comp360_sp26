@@ -13,7 +13,7 @@
     "controls" "bounds" "size" "speed"
     "color" "picture" "velocity"
     "bounce-off" "die-on" "score-on" "game-over"
-    "cpu" "bool"))
+    "cpu"))
 
 
 (define beautiful-game-lex
@@ -30,6 +30,8 @@
      (if (member lexeme keywords)
          (token (string->symbol (string-upcase lexeme)) lexeme)
          (token 'ID lexeme))]
+
+   [(:or "true" "false") (token 'BOOL (equal? lexeme "true"))]
 
    ["=" (token 'OP lexeme)]
    ["{" (token 'LBRACE lexeme)]
